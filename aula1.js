@@ -28,7 +28,7 @@ testando(x,y);
 
 var mediamoto = 36
 
-var viagem = 380
+var viagem = 330
 
 
 gastoviagem(viagem,mediamoto)
@@ -38,11 +38,8 @@ function gastoviagem(distancia,media){
 
     let x=distancia/media 
 
-    console.log('O valor gasto será de: '+(x*5.98))
+    console.log('O valor gasto será de: '+(x*5.98).toFixed(2))
+    
 
 }
-olha so 
-
-console.log(viagem)
-
 

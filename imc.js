@@ -18,7 +18,13 @@ const calculaIMC = (peso, altura) => {
 
 }
 
-var p = 40;
-var a = 1.80;
 
-calculaIMC(p, a);
+
+(function main() {
+    let p = 40;
+    let a = 1.80;
+
+    calculaIMC(p, a);
+
+})(); 
+

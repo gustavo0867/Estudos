@@ -35,7 +35,7 @@ gastoviagem(viagem, mediamoto)
 
 
 function gastoviagem(distancia, media) {
-
+    
     let x = distancia / media
 
     console.log('O valor gasto será de: ' + (x * 5.98).toFixed(2))

@@ -10,9 +10,10 @@ use App\Http\Controllers\JogosController;
 Route::prefix('jogos')->group(function(){
     Route::get('/', [JogosController::class, 'index'])->name('jogos.index'); //listar todos os jogos
     Route::get('/create', [JogosController::class, 'create'])->name('jogos.create'); //criar um novo jogo
-    Route::post('/store', [JogosController::class, 'store'])->name('jogos.store'); //salvar um novo jogo
-    Route::get('/{id}', [JogosController::class, 'show'])->name('jogos.show'); //exibir um jogo
-    Route::get('/{id}/edit', [JogosController::class, 'edit'])->name('jogos.edit'); //editar um jogo
+    Route::post('/', [JogosController::class, 'store'])->name('jogos.store'); //salvar um novo jogo
+    Route::get('/{id}/edit', [JogosController::class, 'edit'])->where('id', '[0-9]+')->name('jogos.edit'); //editar um jogo
+    Route::put('/{id}', [JogosController::class, 'update'])->where('id', '[0-9]+')->name('jogos.update'); //editar um jogo
+    Route::delete('/{id}', [JogosController::class, 'destroy'])->where('id', '[0-9]+')->name('jogos.destroy'); //deletar um jogo
     
 });
 

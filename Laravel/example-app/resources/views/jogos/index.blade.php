@@ -1,5 +1,5 @@
 <!--herda o que tem no app -->
-@extends('layouts.app')
+@extends(view: 'layouts.app')
 
 @section('title', 'Criação de Jogos')
 

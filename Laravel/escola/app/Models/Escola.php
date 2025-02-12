@@ -17,7 +17,7 @@ class Escola extends Model
         'instagram',
         'dia_semana',
         'horario',
-        'tipo',         // Adicionado
-        'observacoes',  // Adicionado
+        'tipo',         
+        'observacoes',  
     ];
 }

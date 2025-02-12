@@ -6,27 +6,28 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up() {
-        Schema::create('escola', function (Blueprint $table) {
+        Schema::create('alunos', function (Blueprint $table) {
+            
             $table->id();
 
             // Aluno
-            $table->string('nome_aluno');
-            $table->string('curso');
-            $table->string('instagram')->nullable();
+            $table->string('nome_aluno',60);
+            $table->enum('curso', ['first', 'onebot', 'techbot', 'autobo', 'gamebot', 'gamebotadv', 'gamebotexp', 'aibot', 'aibotadv', 'developer']);
+            $table->string('instagram',60)->nullable();
 
             // Horário
             $table->enum('dia_semana', ['segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado']);
-            $table->enum('horario', ['09-11', '13-15', '15-17', '08-10', '10-12']);
+            $table->enum('horario', ['09:00-11:00', '13:00-15:00', '15:00-17:00', '08:00-10:00', '10:00-12:00']);
 
-            // Chave estrangeira do aluno (para evitar duplicação de nomes)
-            $table->unsignedBigInteger('aluno_id');
-            $table->foreign('aluno_id')->references('id')->on('escola')->onDelete('cascade');
+            // Novos campos
+            $table->enum('tipo', ['Regular', 'Experimental', 'Reposição'])->default('Regular');
+            $table->text('observacoes')->nullable();
 
             $table->timestamps();
         });
     }
 
     public function down() {
-        Schema::dropIfExists('escola');
+        Schema::dropIfExists('alunos');
     }
 };

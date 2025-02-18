@@ -45,7 +45,7 @@
 <body>
     <h1>Cadastrar Novo Aluno</h1>
 
-    <form action="{{ url('/cadastrar') }}" method="POST">
+    <form action="{{ url('/cadastrar') }}" method="POST" id="cadastroForm">
         @csrf
 
         <label for="dia_semana">Dia da Semana:</label>
@@ -59,20 +59,43 @@
         </select>
 
         <label for="horario">Horário:</label>
-        <select name="horario" required>
-            <option value="09:00-11:00">09:00 - 11:00</option>
-            <option value="13:00-15:00">13:00 - 15:00</option>
-            <option value="15:00-17:00">15:00 - 17:00</option>
-            <option value="08:00-10:00">08:00 - 10:00 (Sábado)</option>
-            <option value="10:00-12:00">10:00 - 12:00 (Sábado)</option>
+        <select name="horario" id="horario" required>
+            <option value="09:00-11:00" class="weekday">09:00 - 11:00</option>
+            <option value="13:00-15:00" class="weekday">13:00 - 15:00</option>
+            <option value="15:00-17:00" class="weekday">15:00 - 17:00</option>
+            <option value="08:00-10:00" class="saturday">08:00 - 10:00</option>
+            <option value="10:00-12:00" class="saturday">10:00 - 12:00</option>
         </select>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+            const diaSemanaSelect = document.querySelector('select[name="dia_semana"]');
+            const horarioSelect = document.querySelector('select[name="horario"]');
+            const weekdayOptions = horarioSelect.querySelectorAll('.weekday');
+            const saturdayOptions = horarioSelect.querySelectorAll('.saturday');
+
+            function updateHorarioOptions() {
+                const selectedDay = diaSemanaSelect.value;
+                if (selectedDay === 'sábado') {
+                weekdayOptions.forEach(option => option.style.display = 'none');
+                saturdayOptions.forEach(option => option.style.display = 'block');
+                } else {
+                weekdayOptions.forEach(option => option.style.display = 'block');
+                saturdayOptions.forEach(option => option.style.display = 'none');
+                }
+            }
+
+            diaSemanaSelect.addEventListener('change', updateHorarioOptions);
+            updateHorarioOptions(); // Initial call to set the correct options on page load
+            });
+        </script>
 
         <label for="nome_aluno">Nome do Aluno:</label>
         <input type="text" name="nome_aluno" required>
 
         <label for="curso">Curso:</label>
-        <select name="curso" required>
-            <option value="first"> First </option>
+        <select name="curso" id="curso" required>
+            <option value="first">First</option>
             <option value="onebot">Onebot</option>
             <option value="techbot">Tech</option>
             <option value="autobo">Autobot</option>
@@ -103,7 +126,64 @@
     <br><br>
     <a href="{{ url('/') }}">
         <button>Voltar ao Cronograma</button>
-    </a>
+    </a>  
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const cursoSelect = document.querySelector('select[name="curso"]');
+            const horarioSelect = document.querySelector('select[name="horario"]');
+            const form = document.getElementById('cadastroForm');
+
+            const courseLimits = {
+                'first': 5,
+                'onebot': 5,
+                'techbot': 3,
+                'autobo': 2,
+                'gamebot': 2,
+                'gamebotadv': 7,
+                'gamebotexp': 7,
+                'aibot': 1,
+                'aibotadv': 1,
+                'developer': 7
+            };
+
+            async function checkCourseLimit() {
+                const curso = cursoSelect.value;
+                const horario = horarioSelect.value;
+                if (curso && horario) {
+                    const response = await fetch(`/check-course-limit?curso=${curso}&horario=${horario}`);
+                    const data = await response.json();
+                    const totalStudents = data.totalCount;
+                    const courseStudents = data.courseCount;
+
+                    console.log(`Total students: ${totalStudents}, Course students: ${courseStudents}`);
+
+                    if (totalStudents >= 7) {
+                        alert(`O limite geral de alunos para o horário ${horario} foi atingido.`);
+                        return false;
+                    } else if (courseStudents >= courseLimits[curso]) {
+                        alert(`O limite de alunos para o curso ${curso} neste horário foi atingido.`);
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            cursoSelect.addEventListener('change', checkCourseLimit);
+            horarioSelect.addEventListener('change', checkCourseLimit);
+
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault(); // Prevent form submission initially
+                const isValid = await checkCourseLimit();
+                if (isValid) {
+                    console.log('Form is valid, submitting...');
+                    form.submit(); // Submit the form if validation passes
+                } else {
+                    console.log('Form is not valid, not submitting.');
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>

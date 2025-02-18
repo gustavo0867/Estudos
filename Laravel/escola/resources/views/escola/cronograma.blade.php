@@ -124,19 +124,11 @@
   </table>
 
   <!-- Seção Tarde -->
-  <h3>Tarde</h3>
+  <h3>1º Horário Tarde</h3>
   @php
     // Filtra os dados que se encaixam no período da tarde
     $tardeItems = $dados->filter(function($item) {
-      return ($item->horario >= '13:00' && $item->horario < '18:00');
-    })->sortBy(function($item) {
-      // Define a ordem desejada para os horários da tarde
-      $order = [
-        '13:00-15:00' => 1,
-        '15:00-17:00' => 2,
-      ];
-      // Se o horário não estiver definido no array, posiciona ao final
-      return $order[$item->horario] ?? 100;
+      return ($item->horario >= '13:00' && $item->horario <= '15:00');
     });
   @endphp
   <table>
@@ -182,6 +174,64 @@
       @endforeach
     </tbody>
   </table>
+
+
+  <h3>2º Horário Tarde</h3>
+  @php
+    // Filtra os dados que se encaixam no período da tarde
+    $tardeItems = $dados->filter(function($item) {
+      return ($item->horario >= '15:00' && $item->horario <= '17:00');
+    });
+  @endphp
+  <table>
+    <thead>
+      <tr>
+        <th>Horário</th>
+        <th>Aluno</th>
+        <th>Curso</th>
+        <th>Instagram</th>
+        <th>Tipo de Aula</th>
+        <th>Observações</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach($tardeItems as $item)
+        @php
+          $bgColor = '';
+          if ($item->tipo == 'Regular') {
+            $bgColor = 'background-color: #3F00FF; color: #fff;';
+          } elseif ($item->tipo == 'Reposição') {
+            $bgColor = 'background-color: #28a745; color: #fff;';
+          } elseif ($item->tipo == 'Experimental') {
+            $bgColor = 'background-color: #9932CC; color: #fff;';
+          }
+        @endphp
+        <tr style="{{ $bgColor }}">
+          <td>{{ $item->horario }}</td>
+          <td>{{ $item->nome_aluno }}</td>
+          <td>{{ $item->curso }}</td>
+          <td>{{ $item->instagram }}</td>
+          <td>{{ $item->tipo }}</td>
+          <td>{{ $item->observacoes }}</td>
+          <td class="action-buttons">
+            <a href="{{ route('escola.edit', ['id'=>$item->id])}}" class="btn btn-primary">✏️</a>
+            <form action="{{ route('escola.destroy', ['id'=>$item->id])}}" method="POST">
+              @csrf
+              @method('DELETE')
+              <button type="submit" class="btn btn-danger">🗑️</button>
+            </form>
+          </td>
+        </tr>
+      @endforeach
+    </tbody>
+  </table>
+
+
+
+
+
+
 
   <!-- Botão para cadastrar um novo aluno -->
   <a href="{{ route('escola.cadastro') }}">

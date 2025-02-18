@@ -1,6 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EscolaController;
+use App\Http\Controllers\AlunoController;
 use App\Models\Escola;
 
 Route::get('/', function () {
@@ -18,11 +19,7 @@ Route::prefix('cadastrar')->group(function(){
     
 });
 
-
-
-
-
-
+Route::get('/check-course-limit', [EscolaController::class, 'checkCourseLimit']);
 
 Route::get('/cronograma/{dia}', function ($dia) {
     $dias_validos = ['segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];

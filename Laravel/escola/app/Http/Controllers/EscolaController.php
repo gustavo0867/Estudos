@@ -61,6 +61,14 @@ class EscolaController extends Controller
         $aluno->delete();
         return redirect()->route('escola.index');
     }
-
+    
+    public function checkCourseLimit(Request $request)
+    {
+        $curso = $request->query('curso');
+        $horario = $request->query('horario');
+        $totalCount = Escola::where('horario', $horario)->count();
+        $courseCount = Escola::where('curso', $curso)->where('horario', $horario)->count();
+        return response()->json(['totalCount' => $totalCount, 'courseCount' => $courseCount]);
+    }
 
 }

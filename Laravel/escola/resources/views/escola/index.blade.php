@@ -77,5 +77,6 @@
     <a href="{{ route ('escola.cadastro') }}">
         <button>Cadastrar    Aluno</button>
     </a>
+    
 </body>
 </html>

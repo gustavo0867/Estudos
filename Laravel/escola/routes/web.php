@@ -1,22 +1,22 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EscolaController;
-use App\Http\Controllers\AlunoController;
 use App\Models\Escola;
+use App\Http\Controllers\LoginController;
 
+// Alteração aqui: Redireciona a rota '/' para '/login'
 Route::get('/', function () {
-    return view('escola.index');
-})->name('escola.index');
+    return redirect('/login');
+});
 
-
-Route::prefix('cadastrar')->group(function(){
+Route::prefix('cronograma')->group(function(){
     Route::get('/', [EscolaController::class, 'index'])->name('escola.cronograma'); //listar 
     Route::post('/', [EscolaController::class, 'store'])->name('escola.store'); //salvar 
     Route::get('/cadastro', [EscolaController::class, 'create'])->name('escola.cadastro'); //criar 
     Route::get('/{id}/edit', [EscolaController::class, 'edit'])->where('id', '[0-9]+')->name('escola.edit'); //editar 
     Route::put('/{id}', [EscolaController::class, 'update'])->where('id', '[0-9]+')->name('escola.update'); //editar 
     Route::delete('/{id}', [EscolaController::class, 'destroy'])->where('id', '[0-9]+')->name('escola.destroy'); //deletar 
-    
 });
 
 Route::get('/check-course-limit', [EscolaController::class, 'checkCourseLimit']);
@@ -31,3 +31,8 @@ Route::get('/cronograma/{dia}', function ($dia) {
     $dados = Escola::where('dia_semana', $dia)->get();
     return view('escola.cronograma', ['dados' => $dados, 'dia' => ucfirst($dia)]);
 })->name('escola.inicial');
+
+Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::get('/logout', [LoginController::class, 'logout']);
+

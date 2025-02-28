@@ -7,34 +7,55 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(to right, #4facfe, #00f2fe);
+            background-color: #4facfe;
             color: #fff;
             text-align: center;
-            padding: 20px;
+            padding: 10px;
         }
 
         form {
             background: rgba(255, 255, 255, 0.2);
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
-            display: inline-block;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 400px;
+            width: 100%;
+            margin: 0 auto;
         }
 
-        input, select {
+        label {
+            align-self: flex-start;
+            margin-bottom: 2px;
+            font-size: 14px;
+        }
+
+        input, select, textarea, button, a button {
             width: 100%;
             padding: 10px;
-            margin: 10px 0;
+            margin-bottom: 8px;
             border: none;
             border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            background-color: #ffffff;
+            color: #000;
+        }
+
+        textarea {
+            resize: none;
+            height: 50px;
         }
 
         button {
             background-color: #ff7f50;
             color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
             cursor: pointer;
+            font-weight: bold;
         }
 
         button:hover {
@@ -124,14 +145,16 @@
     </form>
 
     <br><br>
-    <a href="{{ url('/') }}">
-        <button>Voltar ao Cronograma</button>
-    </a>  
+    <a href="{{ url('/') }}" style="display: inline-block; text-decoration: none;">
+    <button type="button">Voltar ao Cronograma</button>
+    </a>
     
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const cursoSelect = document.querySelector('select[name="curso"]');
             const horarioSelect = document.querySelector('select[name="horario"]');
+            const diaSemanaSelect = document.querySelector('select[name="dia_semana"]');
+            console.log(cursoSelect, horarioSelect, diaSemanaSelect);
             const form = document.getElementById('cadastroForm');
 
             const courseLimits = {
@@ -150,8 +173,9 @@
             async function checkCourseLimit() {
                 const curso = cursoSelect.value;
                 const horario = horarioSelect.value;
-                if (curso && horario) {
-                    const response = await fetch(`/check-course-limit?curso=${curso}&horario=${horario}`);
+                const diaSemana = diaSemanaSelect.value;
+                if (curso && horario && diaSemana) {
+                    const response = await fetch(`/check-course-limit?curso=${curso}&horario=${horario}&dia_semana=${diaSemana}`);
                     const data = await response.json();
                     const totalStudents = data.totalCount;
                     const courseStudents = data.courseCount;
@@ -159,10 +183,10 @@
                     console.log(`Total students: ${totalStudents}, Course students: ${courseStudents}`);
 
                     if (totalStudents >= 7) {
-                        alert(`O limite geral de alunos para o horário ${horario} foi atingido.`);
+                        alert(`O limite geral de alunos para o horário ${horario} no dia ${diaSemana} foi atingido.`);
                         return false;
-                    } else if (courseStudents >= courseLimits[curso]) {
-                        alert(`O limite de alunos para o curso ${curso} neste horário foi atingido.`);
+                    }else if (courseStudents >= courseLimits[curso]) {
+                        alert(`O limite de alunos para o curso ${curso} neste horário no dia ${diaSemana} foi atingido.`);
                         return false;
                     }
                 }
@@ -171,6 +195,7 @@
 
             cursoSelect.addEventListener('change', checkCourseLimit);
             horarioSelect.addEventListener('change', checkCourseLimit);
+            diaSemanaSelect.addEventListener('change', checkCourseLimit);
 
             form.addEventListener('submit', async function (event) {
                 event.preventDefault(); // Prevent form submission initially

@@ -11,8 +11,8 @@ class EscolaController extends Controller
     public function index()
     {
         // Busca os alunos e seus agendamentos
-        $alunos = Escola::all();
-        return view('escola.index', ['alunos' => $alunos]);
+        
+        return view('escola.index');
     }
 
     public function create()
@@ -31,7 +31,7 @@ class EscolaController extends Controller
         $aluno->tipo = $request->tipo;
         $aluno->observacoes = $request->observacoes;
         $aluno->save();
-        return redirect()->route('escola.index');
+        return redirect()->route('escola.cronograma');
     }
 
     public function edit($id)
@@ -39,7 +39,7 @@ class EscolaController extends Controller
         $aluno = Escola::find($id);
         return view('escola.edit', ['aluno' => $aluno]);
         }else{
-            return redirect()->route('escola.index');
+            return redirect()->route('escola.cronograma');
         }
     }
 
@@ -49,9 +49,9 @@ class EscolaController extends Controller
         if(!empty($escola))
                 {
                         $escola->update($request->all());
-                        return redirect()->route('escola.index');
+                        return redirect()->route('escola.cronograma');
                 } else {
-                        return redirect()->route('escola.index');
+                        return redirect()->route('escola.cronograma');
                 }
     }
 
@@ -59,16 +59,30 @@ class EscolaController extends Controller
     {
         $aluno = Escola::find($id);
         $aluno->delete();
-        return redirect()->route('escola.index');
+        return redirect()->route('escola.cronograma');
     }
     
     public function checkCourseLimit(Request $request)
-    {
-        $curso = $request->query('curso');
-        $horario = $request->query('horario');
-        $totalCount = Escola::where('horario', $horario)->count();
-        $courseCount = Escola::where('curso', $curso)->where('horario', $horario)->count();
-        return response()->json(['totalCount' => $totalCount, 'courseCount' => $courseCount]);
-    }
+{
+    $curso = $request->query('curso');
+    $horario = $request->query('horario');
+    $diaSemana = $request->query('dia_semana');
+    
+    // Total de alunos cadastrados naquele horário e dia
+    $totalStudents = Escola::where('horario', $horario)
+        ->where('dia_semana', $diaSemana)
+        ->count();
+
+    // Total de Escolas para o curso no mesmo horário e dia
+    $courseStudents = Escola::where('curso', $curso)
+        ->where('horario', $horario)
+        ->where('dia_semana', $diaSemana)
+        ->count();
+
+    return response()->json([
+        'totalCount' => $totalStudents,
+        'courseCount' => $courseStudents
+    ]);
+}
 
 }

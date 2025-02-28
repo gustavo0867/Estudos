@@ -61,18 +61,27 @@
         button:hover {
             background-color: #ff6347;
         }
-
     </style>
 </head>
 <body>
     <h1>Editar Aluno</h1>
+
+    @if ($errors->any())
+        <div style="color: red; text-align: center;">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <form action="{{ route('escola.update', ['id' => $aluno->id ]) }}" method="POST">
         @csrf
         @method('PUT')
 
         <label for="dia_semana">Dia da Semana:</label>
-        <select id="dia_semana" name="dia_semana" required>
+        <select id="dia_semana" name="dia_semana" required onchange="updateHorarios()">
             @foreach(['segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'] as $dia)
                 <option value="{{ $dia }}" {{ $aluno->dia_semana == $dia ? 'selected' : '' }}>{{ ucfirst($dia) }}</option>
             @endforeach
@@ -80,9 +89,7 @@
 
         <label for="horario">Horário:</label>
         <select id="horario" name="horario" required>
-            @foreach(['09:00-11:00', '13:00-15:00', '15:00-17:00', '08:00-10:00', '10:00-12:00'] as $hora)
-                <option value="{{ $hora }}" {{ $aluno->horario == $hora ? 'selected' : '' }}>{{ $hora }}</option>
-            @endforeach
+            {{-- As opções serão atualizadas pelo JavaScript --}}
         </select>
 
         <label for="nome_aluno">Nome do Aluno:</label>
@@ -114,10 +121,42 @@
     <br>
 
     <a href="{{ url('/') }}" style="display: inline-block; text-decoration: none;">
-    <button type="button">Voltar ao Cronograma</button>
+        <button type="button">Voltar ao Cronograma</button>
     </a>
 
+    <script>
+        const horariosPorDia = {
+            'segunda': ['09:00-11:00', '13:00-15:00', '15:00-17:00'],
+            'terça': ['09:00-11:00', '13:00-15:00', '15:00-17:00'],
+            'quarta': ['09:00-11:00', '13:00-15:00', '15:00-17:00'],
+            'quinta': ['09:00-11:00', '13:00-15:00', '15:00-17:00'],
+            'sexta': ['09:00-11:00', '13:00-15:00', '15:00-17:00'],
+            'sábado': ['08:00-10:00', '10:00-12:00']
+        };
 
+        function updateHorarios() {
+            const diaSelecionado = document.getElementById('dia_semana').value;
+            const horarios = horariosPorDia[diaSelecionado] || [];
+            const horarioSelect = document.getElementById('horario');
 
+            horarioSelect.innerHTML = ''; // Limpa as opções existentes
+
+            horarios.forEach(horario => {
+                const option = document.createElement('option');
+                option.value = horario;
+                option.text = horario;
+
+                // Seleciona o horário atual do aluno, se aplicável
+                if ("{{ $aluno->horario }}" === horario) {
+                    option.selected = true;
+                }
+
+                horarioSelect.appendChild(option);
+            });
+        }
+
+        // Chama a função para inicializar os horários na carga da página
+        updateHorarios();
+    </script>
 </body>
 </html>

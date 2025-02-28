@@ -45,14 +45,41 @@ class EscolaController extends Controller
 
     public function update(Request $request, $id)
     {
-        $escola = Escola::where('id', $request->id)->first();
-        if(!empty($escola))
-                {
-                        $escola->update($request->all());
-                        return redirect()->route('escola.cronograma');
-                } else {
-                        return redirect()->route('escola.cronograma');
-                }
+        $request->validate([
+            'dia_semana' => 'required',
+            'horario' => 'required',
+            'nome_aluno' => 'required',
+            'curso' => 'required',
+            'tipo' => 'required',
+        ]);
+
+        $aluno = Escola::find($id);
+
+        if (!$aluno) {
+            return redirect()->route('escola.cronograma')->with('error', 'Aluno não encontrado.');
+        }
+
+        // Verificação do limite de cursos
+        $limite = 5; // Defina o limite de cursos aqui
+        $cursosNoMesmoHorario = Escola::where('dia_semana', $request->dia_semana)
+            ->where('horario', $request->horario)
+            ->where('id', '!=', $id) // Exclui o aluno atual da contagem
+            ->count();
+
+        if ($cursosNoMesmoHorario >= $limite) {
+            return back()->withInput()->withErrors(['horario' => 'Limite de cursos para este dia e horário atingido.']);
+        }
+
+        $aluno->dia_semana = $request->dia_semana;
+        $aluno->horario = $request->horario;
+        $aluno->nome_aluno = $request->nome_aluno;
+        $aluno->curso = $request->curso;
+        $aluno->instagram = $request->instagram;
+        $aluno->tipo = $request->tipo;
+        $aluno->observacoes = $request->observacoes;
+        $aluno->save();
+
+        return redirect()->route('escola.cronograma')->with('success', 'Aluno atualizado com sucesso.');
     }
 
     public function destroy($id)

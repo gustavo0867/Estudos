@@ -3,7 +3,17 @@
 @section('content')
 <div class="container">
     <h2>Login</h2>
-    <form action="{{ route('login') }}" method="POST">
+    @if($mensagem = Session::get('erro'))
+        {{ $mensagem }}
+    @endsession
+
+    @if($errors->any())
+        @foreach ($errors->all() as $error)
+            {{ $error }} <br>
+        
+        @endforeach
+    @endif
+    <form action="{{ route('login.auth') }}" method="POST">
         @csrf
         <div class="form-group">
             <label for="email">Email:</label>

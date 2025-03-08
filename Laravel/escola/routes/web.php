@@ -10,6 +10,7 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
+
 Route::prefix('cronograma')->group(function(){
     Route::get('/', [EscolaController::class, 'index'])->name('escola.cronograma'); //listar 
     Route::post('/', [EscolaController::class, 'store'])->name('escola.store'); //salvar 
@@ -32,7 +33,9 @@ Route::get('/cronograma/{dia}', function ($dia) {
     return view('escola.cronograma', ['dados' => $dados, 'dia' => ucfirst($dia)]);
 })->name('escola.inicial');
 
-Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
-Route::post('/login', [LoginController::class, 'login']);
+Route::get('/login', function () {
+    return view('escola.login');
+});
+Route::post('/auth', [LoginController::class, 'auth'])->name('login.auth');
 Route::get('/logout', [LoginController::class, 'logout']);
 

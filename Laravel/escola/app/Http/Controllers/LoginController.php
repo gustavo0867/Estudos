@@ -8,12 +8,33 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-class LoginController {
+class LoginController extends Controller {
+
+
+    public function auth(Request $request){
+        
+            $credenciais = $request->validate([
+                'email' => ['required', 'email'],
+                'password' => ['required'],
+            ]);
+        
+        
+
+        if(Auth::attempt($credenciais)){
+            $request->session()->regenerate();
+            return redirect()->intended('cronograma');
+
+        }else{
+            return redirect()->back()->with('erro', 'Usuário ou senha inválidos');
+        }
+
+    }
+
+    /*
     public function showLogin()
-{   
-    return redirect()->route('escola.cronograma');
-    
-}
+    {   
+        return view('escola.login');
+    }
 
     public function login(Request $request)
     {
@@ -38,4 +59,5 @@ class LoginController {
         session()->forget('admin'); // Remove sessão
         return redirect('/login');
     }
+    */
 }
